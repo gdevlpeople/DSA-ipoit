@@ -36,13 +36,24 @@ public class B_Knapsack {
         for (int i = 0; i < n; i++) {
             gold[i]=scanner.nextInt();
         }
-
-
-        int result = 0;
+        boolean[] dp = new boolean[w + 1];
+        dp[0] = true;
+        for (int i = 0; i < n; i++) {
+            int weight = gold[i];
+            for (int j = w; j >= weight; j--) {
+                if (dp[j - weight]) {
+                    dp[j] = true;
+                }
+            }
+        }
+        for (int maxWeight = w; maxWeight >= 0; maxWeight--) {
+            if (dp[maxWeight]) {
+                return maxWeight;
+            }
+        }
+        return 0;
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
-        return result;
     }
-
 
     public static void main(String[] args) throws FileNotFoundException {
         InputStream stream = B_Knapsack.class.getResourceAsStream("dataB.txt");

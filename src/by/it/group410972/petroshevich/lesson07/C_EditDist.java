@@ -49,12 +49,68 @@ import java.util.Scanner;
 public class C_EditDist {
 
     String getDistanceEdinting(String one, String two) {
-        //!!!!!!!!!!!!!!!!!!!!!!!!!     НАЧАЛО ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
+        int n = one.length();
+        int m = two.length();
+        int[][] dp = new int[n + 1][m + 1];
+        // Для восстановления пути
+        char[][] op = new char[n + 1][m + 1];
 
+        // Инициализация первой строки и столбца
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = i;
+            op[i][0] = '-'; // удаление
+        }
+        for (int j = 0; j <= m; j++) {
+            dp[0][j] = j;
+            op[0][j] = '+'; // вставка
+        }
+        op[0][0] = '#'; // старт
 
-        String result = "";
-        //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
-        return result;
+        // Заполнение таблицы DP и операций
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                // Копирование или замена
+                if (one.charAt(i - 1) == two.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                    op[i][j] = '#'; // копирование
+                } else {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                    op[i][j] = '~'; // замена
+                }
+                // Удаление
+                if (dp[i][j] > dp[i - 1][j] + 1) {
+                    dp[i][j] = dp[i - 1][j] + 1;
+                    op[i][j] = '-';
+                }
+                // Вставка
+                if (dp[i][j] > dp[i][j - 1] + 1) {
+                    dp[i][j] = dp[i][j - 1] + 1;
+                    op[i][j] = '+';
+                }
+            }
+        }
+
+        // Восстановление пути
+        StringBuilder res = new StringBuilder();
+        int i = n, j = m;
+        while (i > 0 || j > 0) {
+            char curOp = op[i][j];
+            if (curOp == '#') {
+                res.insert(0, "#,");
+                i--; j--;
+            } else if (curOp == '~') {
+                res.insert(0, "~" + two.charAt(j - 1) + ",");
+                i--; j--;
+            } else if (curOp == '-') {
+                res.insert(0, "-" + one.charAt(i - 1) + ",");
+                i--;
+            } else if (curOp == '+') {
+                res.insert(0, "+" + two.charAt(j - 1) + ",");
+                j--;
+            }
+        }
+
+        return res.toString();
     }
 
 

@@ -38,19 +38,26 @@ public class A_Knapsack {
     int getMaxWeight(InputStream stream ) {
         //!!!!!!!!!!!!!!!!!!!!!!!!!     НАЧАЛО ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         Scanner scanner = new Scanner(stream);
-        int w=scanner.nextInt();
-        int n=scanner.nextInt();
-        int gold[]=new int[n];
+        int W = scanner.nextInt();
+        int n = scanner.nextInt();
+        int[] gold = new int[n];
         for (int i = 0; i < n; i++) {
-            gold[i]=scanner.nextInt();
+            gold[i] = scanner.nextInt();
         }
 
-
-        int result = 0;
+        int[] dp = new int[W + 1];
+        for (int i = 0; i < n; i++) {
+            int wi = gold[i];
+            if (wi == 0) continue;
+            for (int w = wi; w <= W; w++) {
+                if (dp[w] < dp[w - wi] + wi) {
+                    dp[w] = dp[w - wi] + wi;
+                }
+            }
+        }
+        return dp[W];
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
-        return result;
     }
-
 
     public static void main(String[] args) throws FileNotFoundException {
         InputStream stream = A_Knapsack.class.getResourceAsStream("dataA.txt");
