@@ -2,6 +2,7 @@ package by.it.group410972.petroshevich.lesson05;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /*
@@ -57,21 +58,56 @@ public class A_QSort {
         int[] points = new int[m];
         int[] result = new int[m];
 
+        int[] starts = new int[n];
+        int[] stops = new int[n];
+
         //читаем сами отрезки
         for (int i = 0; i < n; i++) {
-            //читаем начало и конец каждого отрезка
-            segments[i] = new Segment(scanner.nextInt(), scanner.nextInt());
+            int a = scanner.nextInt();
+            int b = scanner.nextInt();
+            if (a > b) { // гарантируем правильный порядок концов
+                int t = a; a = b; b = t;
+            }
+            segments[i] = new Segment(a, b);
+            starts[i] = a;
+            stops[i] = b;
         }
         //читаем точки
         for (int i = 0; i < m; i++) {
             points[i] = scanner.nextInt();
         }
-        //тут реализуйте логику задачи с применением быстрой сортировки
-        //в классе отрезка Segment реализуйте нужный для этой задачи компаратор
+        Arrays.sort(starts);
+        Arrays.sort(stops);
 
-
-        //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
+        for (int i = 0; i < m; i++) {
+            int point = points[i];
+            // Количество отрезков, которые начались до или в момент точки
+            int left = upperBound(starts, point);
+            // Количество отрезков, которые закончились до точки (НЕ включая точку)
+            int right = lowerBound(stops, point);
+            result[i] = left - right;
+        }
         return result;
+    }
+    private int upperBound(int[] arr, int value) {
+        int l = 0, r = arr.length;
+        while (l < r) {
+            int m = (l + r) / 2;
+            if (arr[m] <= value) l = m + 1;
+            else r = m;
+        }
+        return l;
+    }
+
+    // lowerBound - сколько значений < value
+    private int lowerBound(int[] arr, int value) {
+        int l = 0, r = arr.length;
+        while (l < r) {
+            int m = (l + r) / 2;
+            if (arr[m] < value) l = m + 1;
+            else r = m;
+        }
+        return l;
     }
 
     //отрезок

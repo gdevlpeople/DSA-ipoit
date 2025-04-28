@@ -61,10 +61,25 @@ public class C_QSortOptimized {
         for (int i = 0; i < m; i++) {
             points[i] = scanner.nextInt();
         }
-        //тут реализуйте логику задачи с применением быстрой сортировки
-        //в классе отрезка Segment реализуйте нужный для этой задачи компаратор
+        quickSort3Way(segments);
 
-
+        // Для каждой точки ищем количество подходящих отрезков
+        for (int i = 0; i < m; i++) {
+            int point = points[i];
+            int idx = binarySearchFirst(segments, point);
+            if (idx == -1) {
+                result[i] = 0;
+                continue;
+            }
+            // Считаем все подряд идущие подходящие отрезки
+            int count = 0;
+            int j = idx;
+            while (j < n && segments[j].start <= point && point <= segments[j].stop) {
+                count++;
+                j++;
+            }
+            result[i] = count;
+        }
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return result;
     }
@@ -81,9 +96,71 @@ public class C_QSortOptimized {
 
         @Override
         public int compareTo(Object o) {
-            //подумайте, что должен возвращать компаратор отрезков
-            return 0;
+            Segment other = (Segment) o;
+            if (this.start != other.start) {
+                return Integer.compare(this.start, other.start);
+            }
+            return Integer.compare(this.stop, other.stop);
         }
     }
+    private void quickSort3Way(Segment[] a) {
+        int[] stack = new int[a.length * 2];
+        int top = 0;
+        stack[top++] = 0;
+        stack[top++] = a.length - 1;
+        while (top > 0) {
+            int right = stack[--top];
+            int left = stack[--top];
+            if (left >= right) continue;
+            int[] mid = partition3(a, left, right);
+            // Сначала меньшую часть в стек (для уменьшения глубины)
+            if (mid[0] - left < right - mid[1]) {
+                stack[top++] = left;
+                stack[top++] = mid[0] - 1;
+                stack[top++] = mid[1] + 1;
+                stack[top++] = right;
+            } else {
+                stack[top++] = mid[1] + 1;
+                stack[top++] = right;
+                stack[top++] = left;
+                stack[top++] = mid[0] - 1;
+            }
+        }
+    }
+
+    private int[] partition3(Segment[] a, int left, int right) {
+        Segment pivot = a[right];
+        int lt = left, gt = right, i = left;
+        while (i <= gt) {
+            int cmp = a[i].compareTo(pivot);
+            if (cmp < 0) swap(a, lt++, i++);
+            else if (cmp > 0) swap(a, i, gt--);
+            else i++;
+        }
+        return new int[]{lt, gt};
+    }
+
+    private void swap(Segment[] a, int i, int j) {
+        Segment tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;
+    }
+
+    private int binarySearchFirst(Segment[] a, int point) {
+        int left = 0, right = a.length - 1, result = -1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (a[mid].start <= point && point <= a[mid].stop) {
+                result = mid;
+                right = mid - 1; // ищем первый слева
+            } else if (a[mid].start > point) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return result;
+    }
+
 
 }
