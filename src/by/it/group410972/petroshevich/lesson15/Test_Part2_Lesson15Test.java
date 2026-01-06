@@ -1,4 +1,4 @@
-package by.it.a_khmelev.lesson15;
+package by.it.group410972.petroshevich.lesson15;
 
 import by.it.HomeWork;
 import org.junit.Test;
